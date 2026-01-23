@@ -1,0 +1,46 @@
+.vscode/**
+.vscode-test/**
+src/**
+.gitignore
+.eslintrc.json
+tsconfig.json
+
+# Source maps
+**/*.map
+
+# TypeScript source
+**/*.ts
+
+# Test and example files
+test-analyzer.js
+example-*.yaml
+
+# Documentation files in node_modules
+**/README.md
+**/CHANGELOG.md
+**/LICENSE
+**/LICENSE.md
+**/NOTICE
+
+# @scarf - telemetry not needed
+node_modules/@scarf/**
+
+# argparse - only used by js-yaml CLI
+node_modules/argparse/**
+
+# js-yaml - exclude browser bundles and CLI
+node_modules/js-yaml/dist/**
+node_modules/js-yaml/bin/**
+
+# swagger-ui-dist - keep only essential files
+**/swagger-ui-dist/swagger-ui.js
+**/swagger-ui-dist/swagger-ui-es-bundle*.js
+**/swagger-ui-dist/favicon-*.png
+**/swagger-ui-dist/index.css
+**/swagger-ui-dist/index.html
+**/swagger-ui-dist/index.js
+**/swagger-ui-dist/absolute-path.js
+**/swagger-ui-dist/swagger-initializer.js
+**/swagger-ui-dist/oauth2-redirect.*
+**/swagger-ui-dist/log.*.txt
+**/swagger-ui-dist/*.LICENSE.txt

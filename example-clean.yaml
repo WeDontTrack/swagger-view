@@ -1,0 +1,76 @@
+swagger: "2.0"
+info:
+  title: Clean API (No Unused Definitions)
+  description: This API has no unused definitions - everything is referenced
+  version: 1.0.0
+host: api.example.com
+basePath: /v1
+schemes:
+  - https
+paths:
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        404:
+          $ref: '#/responses/NotFound'
+    post:
+      summary: Create a user
+      parameters:
+        - $ref: '#/parameters/UserBody'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/User'
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+      address:
+        $ref: '#/definitions/Address'
+    required:
+      - id
+      - name
+      - email
+  
+  Address:
+    type: object
+    properties:
+      street:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+
+parameters:
+  UserBody:
+    name: body
+    in: body
+    required: true
+    schema:
+      $ref: '#/definitions/User'
+
+responses:
+  NotFound:
+    description: Resource not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+

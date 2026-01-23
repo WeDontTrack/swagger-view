@@ -1,0 +1,119 @@
+swagger: "2.0"
+info:
+  title: Sample API with Unused Definitions
+  description: This is a demo API with some unused definitions to test the feature
+  version: 1.0.0
+host: api.example.com
+basePath: /v1
+schemes:
+  - https
+paths:
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+        404:
+          $ref: '#/responses/NotFound'
+    post:
+      summary: Create a user
+      parameters:
+        - $ref: '#/parameters/UserBody'
+      responses:
+        201:
+          description: Created
+          schema:
+            $ref: '#/definitions/User'
+  /products:
+    get:
+      summary: Get all products
+      responses:
+        200:
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Product'
+
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      email:
+        type: string
+    required:
+      - id
+      - name
+      - email
+  
+  Product:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: number
+    required:
+      - id
+      - name
+      - price
+  
+  # UNUSED: This definition is never referenced
+  UnusedModel:
+    type: object
+    properties:
+      id:
+        type: integer
+      data:
+        type: string
+  
+  # UNUSED: Another unused definition
+  AnotherUnusedModel:
+    type: object
+    properties:
+      value:
+        type: string
+
+parameters:
+  UserBody:
+    name: body
+    in: body
+    required: true
+    schema:
+      $ref: '#/definitions/User'
+  
+  # UNUSED: This parameter is never used
+  UnusedParameter:
+    name: limit
+    in: query
+    type: integer
+
+responses:
+  NotFound:
+    description: Resource not found
+    schema:
+      type: object
+      properties:
+        error:
+          type: string
+  
+  # UNUSED: This response is never referenced
+  UnusedResponse:
+    description: Unused error response
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+

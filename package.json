@@ -1,0 +1,66 @@
+{
+  "name": "swagger-preview",
+  "displayName": "Swagger Preview",
+  "description": "Preview Swagger/OpenAPI specifications with Swagger UI. Detect, navigate to, and delete unused definitions.",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.105.1"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "swagger-preview.preview",
+        "title": "Preview Swagger",
+        "category": "Swagger",
+        "icon": "$(open-preview)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "swagger-preview.preview",
+          "when": "resourceLangId == yaml || resourceLangId == json",
+          "group": "navigation"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "swagger-preview.preview",
+          "when": "resourceLangId == yaml || resourceLangId == json",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "swagger-preview.preview",
+          "when": "editorIsOpen"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.105.1",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "swagger-ui-dist": "^5.10.0"
+  }
+}

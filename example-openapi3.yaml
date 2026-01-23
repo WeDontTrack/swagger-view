@@ -1,0 +1,95 @@
+openapi: 3.0.0
+info:
+  title: Sample OpenAPI 3.0 API
+  description: Demo API to test unused definitions detection in OpenAPI 3.0
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Create a user
+      requestBody:
+        $ref: '#/components/requestBodies/UserBody'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+      required:
+        - id
+        - name
+        - email
+    
+    # UNUSED: This schema is never referenced
+    UnusedSchema:
+      type: object
+      properties:
+        data:
+          type: string
+    
+    # UNUSED: Another unused schema
+    AnotherUnused:
+      type: object
+      properties:
+        value:
+          type: integer
+  
+  requestBodies:
+    UserBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    
+    # UNUSED: This request body is never used
+    UnusedRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              test:
+                type: string
+  
+  parameters:
+    LimitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+    
+    # UNUSED: This parameter is never used
+    UnusedParameter:
+      name: offset
+      in: query
+      schema:
+        type: integer
+
