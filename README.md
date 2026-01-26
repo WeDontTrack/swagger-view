@@ -73,6 +73,38 @@ When all definitions are being used:
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
+## Build and load extension
+As of now there is no official publisher extension id or url that we have from which user can search in vscode extension marketplace and download it.
+
+Because of which user is required to follow below steps to generate vsix file and then load it manually in extensions bar to load this extension
+
+### steps
+
+#### Requirements
+> Just make sure that nodejs is installed in your system - for download please visit https://nodejs.org/en this website
+
+#### Build steps
+1. Download vsce npm package
+   ```shell
+   npm install @vscode/vsce #if you want to install globally then add "-g" flag at the end
+   ```
+2. clone this repo
+   ```shell
+   git clone https://github.com/WeDontTrack/swagger-view --branch master
+   ```
+3. install all dependencies
+   ```shell
+   cd swagger-view
+   npm install
+   ```
+4. Build vsix file by running below command
+   ```shell
+   vsce package #and enter y to all input requests
+   ```
+5. Now there will be vsix file generated in the folder
+6. Drag this vsix file to the extension bar in the vscode - And boom - extension is ready to use.
+   
+
 ## Usage
 
 ### Opening the Preview
@@ -243,7 +275,7 @@ All features:
 
 ## License
 
-MIT
+GNU GENERAL PUBLIC LICENSE  Version 3
 
 ---
 
