@@ -44,34 +44,13 @@ Remove unused definitions directly from the preview:
 - **Smart Deletion** - Automatically removes associated comments (like `# UNUSED:`)
 
 ## Screenshots
+![image1.png](screenshots/image1.png)
 
-### Unused Definitions Banner
+![image2.png](screenshots/image2.png)
 
-When you open a Swagger file with unused definitions, you'll see a warning banner:
+![image3.png](screenshots/image3.png)
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ ⚠️ Unused Definitions Found    [ 4 / 8 ]              ▼ Click to expand │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│ Found 4 unused definition(s) out of 8 total.     [ 🗑 Delete All (4) ]  │
-│                                                                          │
-│ [Definition] UnusedModel         #/definitions/...   → Go to │ 🗑 Delete │
-│ [Definition] AnotherUnusedModel  #/definitions/...   → Go to │ 🗑 Delete │
-│ [Parameter]  UnusedParameter     #/parameters/...    → Go to │ 🗑 Delete │
-│ [Response]   UnusedResponse      #/responses/...     → Go to │ 🗑 Delete │
-└─────────────────────────────────────────────────────────────────────────┘
-```
 
-### Clean Specification
-
-When all definitions are being used:
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│ ✅ No Unused Definitions    [ 0 / 5 ]                 ▼ Click to expand │
-└─────────────────────────────────────────────────────────────────────────┘
-```
 
 ## Build and load extension
 As of now there is no official publisher extension id or url that we have from which user can search in vscode extension marketplace and download it.
@@ -279,4 +258,8 @@ GNU GENERAL PUBLIC LICENSE  Version 3
 
 ---
 
-**Enjoy keeping your API specifications clean!** 🎉
+## Reach - out
+For any queries/suggestions/bug fixes - please raise issue on https://github.com/WeDontTrack/swagger-view repo
+
+**Enjoy keeping your API specifications _clean and private_!** 
+
