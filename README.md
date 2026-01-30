@@ -150,7 +150,8 @@ Open any of these files in VS Code and use the preview command to see the featur
 ### Setup
 
 ```bash
-cd ~/winnovations/swagger-preview
+git clone https://github.com/WeDontTrack/swagger-view --branch master
+cd /swagger-preview
 npm install
 ```
 
