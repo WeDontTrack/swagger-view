@@ -1,0 +1,92 @@
+name: Build and Release VSCE Package
+
+on:
+  push:
+    branches:
+      - master # Triggers on push to main
+  workflow_dispatch: # Allows you to manually trigger the workflow from the Actions tab
+
+permissions:
+  contents: write # Required to create GitHub Releases and tags
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Recommended stable Node version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Extract version from package.json
+        id: get_version
+        run: |
+          # Read the version field from package.json using Node.js
+          VERSION=$(node -p "require('./package.json').version")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Extracted version: $VERSION"
+
+      - name: Check if release tag already exists
+        id: check_tag
+        run: |
+          # Checks remote repository to see if this version tag already exists
+          if [ $(git ls-remote --tags origin refs/tags/v${{ env.VERSION }} | wc -l) -gt 0 ]; then
+            echo "Tag v${{ env.VERSION }} already exists. Skipping release."
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tag v${{ env.VERSION }} does not exist. Proceeding with release."
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install VSCE and package extension
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          npm install -g @vscode/vsce
+          vsce package --baseContentUrl https://localhost --baseImagesUrl https://localhost
+          
+          # Find the generated .vsix file dynamically
+          VSIX_FILE=$(ls *.vsix | head -n 1)
+          echo "VSIX_FILE=$VSIX_FILE" >> $GITHUB_ENV
+          echo "Generated package: $VSIX_FILE"
+
+      - name: Generate MD5, SHA256, and SHA512 hashes
+        if: steps.check_tag.outputs.exists == 'false'
+        run: |
+          # Create the hash files
+          md5sum ${{ env.VSIX_FILE }} > ${{ env.VSIX_FILE }}.md5
+          sha256sum ${{ env.VSIX_FILE }} > ${{ env.VSIX_FILE }}.sha256
+          sha512sum ${{ env.VSIX_FILE }} > ${{ env.VSIX_FILE }}.sha512
+
+      - name: Upload Build Artifacts (Actions UI)
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: swagger-view-v${{ env.VERSION }}-artifacts
+          path: |
+            ${{ env.VSIX_FILE }}
+            ${{ env.VSIX_FILE }}.md5
+            ${{ env.VSIX_FILE }}.sha256
+            ${{ env.VSIX_FILE }}.sha512
+          retention-days: 90
+
+      - name: Create GitHub Release
+        if: steps.check_tag.outputs.exists == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          generate_release_notes: true
+          files: |
+            ${{ env.VSIX_FILE }}
+            ${{ env.VSIX_FILE }}.md5
+            ${{ env.VSIX_FILE }}.sha256
+            ${{ env.VSIX_FILE }}.sha512
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
