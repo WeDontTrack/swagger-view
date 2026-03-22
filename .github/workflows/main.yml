@@ -20,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20' # Recommended stable Node version
+          node-version: '24' # Recommended stable Node version
 
       - name: Install dependencies
         run: npm install
@@ -49,7 +49,7 @@ jobs:
         if: steps.check_tag.outputs.exists == 'false'
         run: |
           npm install -g @vscode/vsce
-          vsce package --baseContentUrl https://localhost --baseImagesUrl https://localhost
+          vsce package --baseContentUrl https://localhost --baseImagesUrl https://localhost --allow-missing-repository
           
           # Find the generated .vsix file dynamically
           VSIX_FILE=$(ls *.vsix | head -n 1)
