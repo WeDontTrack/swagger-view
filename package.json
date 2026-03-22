@@ -2,7 +2,7 @@
   "name": "swagger-preview",
   "displayName": "Swagger Preview",
   "description": "Preview Swagger/OpenAPI specifications with Swagger UI. Detect, navigate to, and delete unused definitions.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "engines": {
     "vscode": "^1.105.1"
   },
