@@ -78,7 +78,7 @@ Because of which user is required to follow below steps to generate vsix file an
    ```
 4. Build vsix file by running below command
    ```shell
-   vsce package #and enter y to all input requests
+   vsce package --baseContentUrl https://localhost --baseImagesUrl https://localhost"  #and enter y to all input requests
    ```
 5. Now there will be vsix file generated in the folder
 6. Drag this vsix file to the extension bar in the vscode - And boom - extension is ready to use.
