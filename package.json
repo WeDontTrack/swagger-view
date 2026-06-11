@@ -17,6 +17,12 @@
         "title": "Preview Swagger",
         "category": "Swagger",
         "icon": "$(open-preview)"
+      },
+      {
+        "command": "swagger-preview.previewFile",
+        "title": "Preview Swagger File",
+        "category": "Swagger",
+        "icon": "$(open-preview)"
       }
     ],
     "menus": {
@@ -27,19 +33,27 @@
           "group": "navigation"
         }
       ],
-      "editor/context": [
-        {
-          "command": "swagger-preview.preview",
-          "when": "resourceLangId == yaml || resourceLangId == json",
-          "group": "navigation"
-        }
+      "explorer/context": [
+        { "command": "swagger-preview.previewFile",
+          "when": "resourceExtname == .yaml || resourceExtname == .yml || resourceExtname == .json",
+          "group": "navigation" }
       ],
       "commandPalette": [
         {
           "command": "swagger-preview.preview",
           "when": "editorIsOpen"
-        }
+        },
+        { "command": "swagger-preview.previewFile" }
       ]
+    },
+    "configuration": {
+      "title": "Swagger Preview",
+      "properties": {
+        "swagger-preview.closeOnEditorChange": {
+          "type": "boolean", "default": false,
+          "description": "Close the Swagger preview when you switch to a different editor..."
+        }
+      }
     }
   },
   "scripts": {

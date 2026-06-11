@@ -21,7 +21,7 @@ export class SwaggerPreviewPanel {
     private readonly _specParser: SpecParser;
     
     private _disposables: vscode.Disposable[] = [];
-    private _isInitialized: boolean = false;
+    private _hasValidUi: boolean = false;
     private _lastSpecHash: string = '';
     
     public document: vscode.TextDocument | undefined;
@@ -63,7 +63,21 @@ export class SwaggerPreviewPanel {
             case 'goToPath':
                 await this._goToPath(message.path, message.method);
                 break;
+            case 'refresh':
+                this._refresh();
+                break;
         }
+    }
+
+    private _refresh(): void {
+        if (!this.document) {
+            return;
+        }
+        // Force a full re-render from the current document contents, even when the
+        // panel is currently showing the error page.
+        this._lastSpecHash = '';
+        this._hasValidUi = false;
+        this._update(this.document);
     }
 
     private async _goToDefinition(name: string, type: string): Promise<void> {
@@ -155,6 +169,7 @@ export class SwaggerPreviewPanel {
         
         // Reset state
         this._lastSpecHash = '';
+        this._hasValidUi = false;
 
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
@@ -168,13 +183,16 @@ export class SwaggerPreviewPanel {
         const specContent = document.getText();
         const contentHash = fastHash(specContent);
         
-        if (contentHash === this._lastSpecHash && this._isInitialized) {
+        if (contentHash === this._lastSpecHash && this._hasValidUi) {
             return;
         }
         
         this._lastSpecHash = contentHash;
         
-        if (this._isInitialized) {
+        // Only attempt a lightweight in-place update when the webview currently
+        // holds a live Swagger UI. After an error page there is no listener or
+        // Swagger UI instance, so we must do a full reload to recover.
+        if (this._hasValidUi) {
             const updateResult = this._tryIncrementalUpdate(specContent);
             if (updateResult) {
                 return;
@@ -183,8 +201,16 @@ export class SwaggerPreviewPanel {
         
         const webview = this._panel.webview;
         this._panel.title = `Preview: ${path.basename(document.fileName)}`;
+        
+        const parseResult = this._specParser.parse(specContent);
+        if (!parseResult.success || !parseResult.spec) {
+            this._panel.webview.html = this._getErrorHtml(parseResult.error || 'Invalid specification format.');
+            this._hasValidUi = false;
+            return;
+        }
+        
         this._panel.webview.html = this._getHtmlForWebview(webview, document);
-        this._isInitialized = true;
+        this._hasValidUi = true;
     }
 
     private _tryIncrementalUpdate(specContent: string): boolean {
@@ -201,6 +227,7 @@ export class SwaggerPreviewPanel {
             this._panel.webview.postMessage({
                 command: 'updateSpec',
                 spec: parseResult.spec,
+                specString: parseResult.specString,
                 analysis: analysisResult
             });
             
@@ -446,9 +473,36 @@ export class SwaggerPreviewPanel {
             font-size: 11px;
             font-weight: 500;
         }
+        
+        /* Manual refresh button */
+        .refresh-fab {
+            position: fixed;
+            top: 12px;
+            right: 16px;
+            z-index: 1000;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .refresh-fab:hover {
+            background: #1565c0;
+        }
+        .refresh-fab:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
 <body>
+    <button class="refresh-fab" onclick="refreshPreview()" title="Refresh preview from the file">↻ Refresh</button>
     <div id="unused-definitions-banner"></div>
     <div id="swagger-ui"></div>
     <script src="${swaggerUiBundleUri}"></script>
@@ -469,15 +523,21 @@ export class SwaggerPreviewPanel {
                 // Re-render UI components
                 renderUnusedDefinitionsBanner();
                 
-                // Update Swagger UI with new spec
+                // Update Swagger UI with new spec. Swagger UI's updateSpec
+                // expects a raw spec STRING (not a parsed object), so pass the
+                // serialized spec to actually trigger a re-render.
                 if (window.ui) {
-                    window.ui.specActions.updateSpec(message.spec);
+                    window.ui.specActions.updateSpec(message.specString);
                 }
                 
                 // Re-add navigation buttons after a short delay
                 setTimeout(addNavigationButtons, 200);
             }
         });
+        
+        function refreshPreview() {
+            vscode.postMessage({ command: 'refresh' });
+        }
         
         function goToDefinition(name, type) {
             vscode.postMessage({
@@ -733,17 +793,33 @@ export class SwaggerPreviewPanel {
         }
         .error-message {
             color: #333;
-            line-height: 1.6;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            margin: 0;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 4px;
+            border: 1px solid #eee;
         }
     </style>
 </head>
 <body>
     <div class="error-container">
-        <h2 class="error-title">⚠️ Error</h2>
-        <p class="error-message">${message}</p>
+        <h2 class="error-title">⚠️ Could not render preview</h2>
+        <pre class="error-message">${this._escapeHtml(message)}</pre>
     </div>
 </body>
 </html>`;
+    }
+
+    private _escapeHtml(text: string): string {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     }
 }
 
