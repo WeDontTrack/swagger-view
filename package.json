@@ -2,13 +2,15 @@
   "name": "swagger-preview",
   "displayName": "Swagger Preview",
   "description": "Preview Swagger/OpenAPI specifications with Swagger UI. Detect, navigate to, and delete unused definitions.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engines": {
     "vscode": "^1.105.1"
   },
   "categories": [
     "Other"
   ],
+  "publisher": "weDonttrack",
+  "repository": "https://github.com/WeDontTrack/swagger-view",
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
